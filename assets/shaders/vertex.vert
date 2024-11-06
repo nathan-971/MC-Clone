@@ -10,6 +10,6 @@ uniform mat4 camMatrix;
 
 void main()
 {
-	texCoord = aTex;
+	texCoord = aTex * 0.5f;
 	gl_Position = camMatrix * model * vec4(aPos, 1.0);
 }

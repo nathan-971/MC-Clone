@@ -46,11 +46,11 @@ void Camera::Inputs(GLFWwindow* window)
 	}	
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 	{
-		speed = 5.0f;
+		speed = 10.0f;
 	}
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE)
 	{
-		speed = 2.5f;
+		speed = 5.0f;
 	}
 
 	//Reset Cam
