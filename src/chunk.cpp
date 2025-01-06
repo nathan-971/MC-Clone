@@ -109,11 +109,11 @@ void Chunk::genChunk()
                     vertices.push_back(Vertex(x + 1.0f, y + 0.0f, z + 1.0f, currentBlock->bottomMaxX, currentBlock->bottomMaxY));
                     vertices.push_back(Vertex(x + 0.0f, y + 0.0f, z + 1.0f, currentBlock->bottomMinX, currentBlock->bottomMaxY));
                     indices.push_back(currentVertex + 0);
+                    indices.push_back(currentVertex + 2);
                     indices.push_back(currentVertex + 1);
-                    indices.push_back(currentVertex + 2);
                     indices.push_back(currentVertex + 0);
-                    indices.push_back(currentVertex + 2);
                     indices.push_back(currentVertex + 3);
+                    indices.push_back(currentVertex + 2);
                     currentVertex += 4;
                 }
 
@@ -125,25 +125,23 @@ void Chunk::genChunk()
                     vertices.push_back(Vertex(x + 1.0f, y + 1.0f, z + 1.0f, currentBlock->topMaxX, currentBlock->topMaxY));
                     vertices.push_back(Vertex(x + 1.0f, y + 1.0f, z + 0.0f, currentBlock->topMaxX, currentBlock->topMinY));
                     indices.push_back(currentVertex + 0);
+                    indices.push_back(currentVertex + 2);
                     indices.push_back(currentVertex + 1);
-                    indices.push_back(currentVertex + 2);
                     indices.push_back(currentVertex + 0);
-                    indices.push_back(currentVertex + 2);
                     indices.push_back(currentVertex + 3);
+                    indices.push_back(currentVertex + 2);
                     currentVertex += 4;
                 }
             }
         }
     }
 
-
 	this->generated = true;
-
 	//std::cout << "Vertices Size: " << vertices.size() << "\nIndices Size: " << indices.size();
 	//std::cout << "\nWorld Position: (" << chunkPos.x << ", " << chunkPos.y << ", " << chunkPos.z << ")\n";
 }
 
-void Chunk::renderChunk(unsigned int modelLoc)
+void Chunk::renderChunk(unsigned int& shaderID)
 {
 	if (!ready)
 	{
@@ -172,6 +170,6 @@ void Chunk::renderChunk(unsigned int modelLoc)
 	glBindVertexArray(VAO);
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::translate(model, worldPos);
-	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+	glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(model));
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
 }

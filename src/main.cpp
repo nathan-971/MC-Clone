@@ -8,6 +8,9 @@
 #include "camera.h"
 #include "chunk.h"
 
+#define VSYNC 1
+#define NOVSYNC 0
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 const unsigned int SCR_WIDTH = 800;
@@ -28,6 +31,7 @@ int main()
         return -1;
     }
     glfwMakeContextCurrent(window);
+    glfwSwapInterval(VSYNC);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -36,16 +40,18 @@ int main()
         return -1;
     }
     glEnable(GL_DEPTH_TEST);
-
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glFrontFace(GL_CW);
 
     float deltaTime = 0.0f;
     float lastFrameTime = 0.0f;
 
     Shader shader("assets/shaders/vertex.vert", "assets/shaders/fragment.frag");
-    Camera camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, -8.0f, 0.0f));
+    Camera camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.0f, 0.0f));
     Texture textureMap("assets/textures/blockMap.png");
 
-    Chunk c(16, glm::vec3(0.0f, 0.0f, 0.0f));
+    Chunk c(8, glm::vec3(0.0f, 0.0f, 0.0f));
 
     while (!glfwWindowShouldClose(window))
     {
@@ -59,7 +65,7 @@ int main()
 
         textureMap.Bind();
         shader.Activate();
-        c.renderChunk(glGetUniformLocation(shader.progID, "model"));
+        c.renderChunk(shader.progID);
 
         camera.updateCameraMatrix(75.0f, 0.05f, 100.0f);
         camera.Inputs(window);

@@ -34,7 +34,7 @@ public:
 	Chunk(unsigned int size, glm::vec3 pos);
 	~Chunk();
 	void genChunk();
-	void renderChunk(unsigned int modelLoc);
+	void renderChunk(unsigned int& shaderID);
 	glm::vec3 chunkPos;
 	std::vector<unsigned int> chunkData; //Holds enum vals for block types
 private:
