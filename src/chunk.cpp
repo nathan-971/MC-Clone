@@ -21,8 +21,9 @@ void Chunk::genChunk()
 {
 	int currentVertex = 0;
 	worldPos = glm::vec3(chunkPos.x * size, chunkPos.y * size, chunkPos.z * size);
-    chunkData.resize(size * size * size, BlockUtils::BlockType::GRASS); //Fill with Block and reserve memory
-
+    //chunkData.resize(size * size * size, BlockUtils::BlockType::GRASS); //Fill with Block and reserve memory
+    //std::vector<unsigned int> deletetis = ChunkGenerator::generateChunkData(chunkData, size);
+    chunkData = ChunkGenerator::generateChunkData(chunkData, size);
     for (int x = 0; x < size; x++)
     {
         for (int z = 0; z < size; z++)

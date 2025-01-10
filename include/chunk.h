@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "block.h"
+#include "chunkGenerator.h"
 
 struct Vertex
 {
