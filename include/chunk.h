@@ -43,6 +43,7 @@ private:
 	bool generated;
 	unsigned int VAO, VBO, EBO;
 	unsigned int size;
+	unsigned int height;
 
 	glm::vec3 worldPos;
 	std::vector<Vertex> vertices;

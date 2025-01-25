@@ -8,11 +8,7 @@
 class ChunkGenerator
 {
 public:
-	std::vector<unsigned int> data;
-
-	ChunkGenerator();
-	~ChunkGenerator();
-	static std::vector<unsigned int> generateChunkData(std::vector<unsigned int>& oldData, int size);
+	static std::vector<unsigned int> generateChunkData(int chunkWidth, int chunkHeight);
 };
 
 #endif

@@ -6,6 +6,7 @@ Chunk::Chunk(unsigned int size, glm::vec3 pos)
 	this->generated = false;
 	this->ready = false;
 	this->size = size;
+    this->height = 32;
 	this->chunkPos = pos;
 	genChunk();
 }
@@ -21,16 +22,15 @@ void Chunk::genChunk()
 {
 	int currentVertex = 0;
 	worldPos = glm::vec3(chunkPos.x * size, chunkPos.y * size, chunkPos.z * size);
-    //chunkData.resize(size * size * size, BlockUtils::BlockType::GRASS); //Fill with Block and reserve memory
-    //std::vector<unsigned int> deletetis = ChunkGenerator::generateChunkData(chunkData, size);
-    chunkData = ChunkGenerator::generateChunkData(chunkData, size);
-    for (int x = 0; x < size; x++)
+    chunkData = ChunkGenerator::generateChunkData(size, height);
+
+    for (int y = 0; y < height; y++)
     {
         for (int z = 0; z < size; z++)
         {
-            for (int y = 0; y < size; y++)
+            for (int x = 0; x < size; x++)
             {
-                int index = x * size * size + z * size + y;
+                int index = y * size * size + z * size + x;
                 if (chunkData[index] == BlockUtils::BlockType::AIR) // Skip if block is air
                 {
                     continue;
@@ -39,7 +39,7 @@ void Chunk::genChunk()
                 const BlockUtils::Block* currentBlock = &BlockUtils::blockRegistry[chunkData[index]];
 
                 // North Face
-                if (z + 1 >= size || chunkData[x * size * size + (z + 1) * size + y] == BlockUtils::BlockType::AIR)
+                if (z + 1 >= size || chunkData[y * (size * size) + (z + 1) * size + x] == BlockUtils::BlockType::AIR)
                 {
                     vertices.push_back(Vertex(x + 0.0f, y + 0.0f, z + 1.0f, currentBlock->sideMinX, currentBlock->sideMinY));
                     vertices.push_back(Vertex(x + 0.0f, y + 1.0f, z + 1.0f, currentBlock->sideMinX, currentBlock->sideMaxY));
@@ -55,7 +55,7 @@ void Chunk::genChunk()
                 }
 
                 // South Face
-                if (z - 1 < 0 || chunkData[x * size * size + (z - 1) * size + y] == BlockUtils::BlockType::AIR)
+                if (z - 1 < 0 || chunkData[y * (size * size) + (z - 1) * size + x] == BlockUtils::BlockType::AIR)
                 {
                     vertices.push_back(Vertex(x + 0.0f, y + 0.0f, z + 0.0f, currentBlock->sideMinX, currentBlock->sideMinY));
                     vertices.push_back(Vertex(x + 1.0f, y + 0.0f, z + 0.0f, currentBlock->sideMaxX, currentBlock->sideMinY));
@@ -71,7 +71,7 @@ void Chunk::genChunk()
                 }
 
                 // West Face
-                if (x - 1 < 0 || chunkData[(x - 1) * size * size + z * size + y] == BlockUtils::BlockType::AIR)
+                if (x - 1 < 0 || chunkData[y * (size * size) + z * size + (x - 1)] == BlockUtils::BlockType::AIR)
                 {
                     vertices.push_back(Vertex(x + 0.0f, y + 0.0f, z + 0.0f, currentBlock->sideMinX, currentBlock->sideMinY));
                     vertices.push_back(Vertex(x + 0.0f, y + 1.0f, z + 0.0f, currentBlock->sideMinX, currentBlock->sideMaxY));
@@ -87,7 +87,7 @@ void Chunk::genChunk()
                 }
 
                 // East Face
-                if (x + 1 >= size || chunkData[(x + 1) * size * size + z * size + y] == BlockUtils::BlockType::AIR)
+                if (x + 1 >= size || chunkData[y * (size * size) + z * size + (x + 1)] == BlockUtils::BlockType::AIR)
                 {
                     vertices.push_back(Vertex(x + 1.0f, y + 0.0f, z + 0.0f, currentBlock->sideMinX, currentBlock->sideMinY));
                     vertices.push_back(Vertex(x + 1.0f, y + 0.0f, z + 1.0f, currentBlock->sideMaxX, currentBlock->sideMinY));
@@ -119,7 +119,7 @@ void Chunk::genChunk()
                 }
 
                 // Top Face
-                if (y + 1 >= size || chunkData[x * size * size + z * size + (y + 1)] == BlockUtils::BlockType::AIR)
+                if (y + 1 >= height || chunkData[(y + 1) * size * size + z * size + x] == BlockUtils::BlockType::AIR)
                 {
                     vertices.push_back(Vertex(x + 0.0f, y + 1.0f, z + 0.0f, currentBlock->topMinX, currentBlock->topMinY));
                     vertices.push_back(Vertex(x + 0.0f, y + 1.0f, z + 1.0f, currentBlock->topMinX, currentBlock->topMaxY));

@@ -1,6 +1,6 @@
 #include "block.h"
 
-BlockUtils::Block::Block(char minX, char maxX, char minY, char maxY)
+BlockUtils::Block::Block(char minX, char maxX, char minY, char maxY) //Single Textured Block
 {
 	sideMinX = minX;
 	sideMaxX = maxX;
@@ -21,7 +21,7 @@ BlockUtils::Block::Block(char minX, char maxX, char minY, char maxY)
 BlockUtils::Block::Block(
 	char t_minX, char t_maxX, char t_minY, char t_maxY,
 	char s_minX, char s_maxX, char s_minY, char s_maxY,
-	char b_minX, char b_maxX, char b_minY, char b_maxY)
+	char b_minX, char b_maxX, char b_minY, char b_maxY) //Triple Textured Block
 {
 	topMinX = t_minX;
 	topMaxX = t_maxX;
