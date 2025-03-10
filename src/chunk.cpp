@@ -6,7 +6,7 @@ Chunk::Chunk(unsigned int size, glm::vec3 pos)
 	this->generated = false;
 	this->ready = false;
 	this->size = size;
-    this->height = 32;
+    this->height = 1;
 	this->chunkPos = pos;
 	genChunk();
 }
@@ -103,7 +103,7 @@ void Chunk::genChunk()
                 }
 
                 // Bottom Face
-                if (y - 1 < 0 || chunkData[x * size * size + z * size + (y - 1)] == BlockUtils::BlockType::AIR)
+                if (y - 1 < 0 || chunkData[(y - 1) * size * size + z * size + x] == BlockUtils::BlockType::AIR)
                 {
                     vertices.push_back(Vertex(x + 0.0f, y + 0.0f, z + 0.0f, currentBlock->bottomMinX, currentBlock->bottomMinY));
                     vertices.push_back(Vertex(x + 1.0f, y + 0.0f, z + 0.0f, currentBlock->bottomMaxX, currentBlock->bottomMinY));

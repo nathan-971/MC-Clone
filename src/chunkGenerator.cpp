@@ -15,7 +15,7 @@ std::vector<unsigned int> ChunkGenerator::generateChunkData(int chunkWidth, int 
             {    
                 if (y <= 16)
                 {
-                    newData.push_back(BlockUtils::BlockType::STONE);
+                    newData.push_back(BlockUtils::BlockType::DIRT);
                 }
                 else if (y >= 17 && y <= 30)
                 {
@@ -26,7 +26,7 @@ std::vector<unsigned int> ChunkGenerator::generateChunkData(int chunkWidth, int 
                     float noise = PerlinNoise::perlin2D(z, x, scale);
                     if (noise < 0.5)
                     {
-                        newData.push_back(BlockUtils::BlockType::GRASS);
+                        newData.push_back(BlockUtils::BlockType::DIRT);
                     }
                     else
                     {

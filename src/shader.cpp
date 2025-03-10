@@ -76,7 +76,6 @@ void Shader::compileErrors(GLuint ID, const char* type) const
 			std::cout << "SHADER_LINKING_ERROR for: " << type << "\n" << infoLog << std::endl;
 		}
 	}
-
 }
 
 std::string Shader::readInShaderFromSource(const char* path) const

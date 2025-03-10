@@ -69,7 +69,7 @@ int main()
     Camera camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.0f, 0.0f));
     Texture textureMap("assets/textures/blockMap.png");
 
-    Chunk c(16, glm::vec3(0.0f, 0.0f, 0.0f));
+    Chunk c(1, glm::vec3(0.0f, 0.0f, 0.0f));
 
     while (!glfwWindowShouldClose(window))
     {
