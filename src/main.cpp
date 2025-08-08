@@ -10,13 +10,13 @@
 #include "shader.h"
 #include "texture.h"
 #include "camera.h"
-#include "chunk.h"
+#include "world.h"
 
 #define VSYNC 1
 #define NOVSYNC 0
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void enableWireFrame(GLFWwindow* window, bool enable);
+void enableWireFrame(GLFWwindow* window);
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 800;
@@ -65,15 +65,15 @@ int main()
     int frames = 0;
     static int fps = 0;
 
-    Shader shader("assets/shaders/vertex.vert", "assets/shaders/fragment.frag");
-    Camera camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.0f, 0.0f));
+    Shader shader("assets/shaders/vertex.glsl", "assets/shaders/fragment.glsl");
+    Camera camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 35.0f, 0.0f));
     Texture textureMap("assets/textures/blockMap.png");
-
-    Chunk c(1, glm::vec3(0.0f, 0.0f, 0.0f));
+    World world(camera.Position , 4, shader.progID);
 
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
+        enableWireFrame(window);
 
         //ImGui Frame
         ImGui_ImplOpenGL3_NewFrame();
@@ -98,6 +98,7 @@ int main()
         ImGui::Text("FPS: %d", fps);
         ImGui::Text("Camera Position: ( %.2f, %.2f, %.2f )", camera.Position.x, camera.Position.y, camera.Position.z);
         ImGui::Text("Camera Speed: %.2f", camera.speed);
+        ImGui::Text("Current Chunk Amount: %.d", world.getChunkAmount());
         ImGui::End();
 
         glClearColor(0.3f, 0.5f, 0.8f, 1.0f);
@@ -105,7 +106,7 @@ int main()
 
         textureMap.Bind();
         shader.Activate();
-        c.renderChunk(shader.progID);
+        world.renderWorld();
 
         camera.updateCameraMatrix(75.0f, 0.05f, 100.0f);
         camera.Inputs(window);
@@ -120,7 +121,7 @@ int main()
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
-    c.~Chunk();
+    world.~World();
     shader.~Shader();
     glfwTerminate();
     return 0;
@@ -131,20 +132,23 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
-//Really Bad Performance
-void enableWireFrame(GLFWwindow* window, bool enable)
+void enableWireFrame(GLFWwindow* window)
 {
+    static bool enabled = false;
+    static bool lastFramePressed = false;
+
     if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
     {
-        if (enable)
+        if (!lastFramePressed)
         {
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            enable = false;
+            enabled = !enabled;
+            glPolygonMode(GL_FRONT_AND_BACK, enabled ? GL_LINE : GL_FILL);
+            std::cout << "Toggling Wireframe Mode: " << (enabled ? "Enabled" : "Disabled") << std::endl;
         }
-        else
-        {
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-            enable = true;
-        }
+        lastFramePressed = true;
+    }
+    else
+    {
+        lastFramePressed = false;
     }
 }

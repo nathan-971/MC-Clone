@@ -10,11 +10,7 @@ namespace BlockUtils
 		AIR = 0,
 		GRASS = 1,
 		DIRT = 2,
-		STONE = 3,
-		COBBLESTONE = 4,
-		PLANKS = 5,
-		LOG = 6,
-		GLASS = 7
+		STONE = 3
 	};
 
 	class Block
@@ -37,16 +33,11 @@ namespace BlockUtils
 
 	inline std::vector<Block> blockRegistry = {
 		Block(0, 0, 0, 0), //AIR
-		Block(0, 1, 0, 1,  //GRASS
+		Block(0, 1, 0, 1, //GRASS
 			  0, 1, 1, 2,
 			  2, 1, 1, 2),
 		Block(2, 1, 1, 2), //DIRT
-		Block(1, 2, 0, 1), //STONE
-		Block(3, 3, 3, 3), //COBBLESTONE
-		Block(4, 4, 4, 4), //PLANKS
-		Block(5, 5, 5, 5,  //LOG
-			  5, 5, 5, 5),
-		Block(6, 6, 6, 6)  //GLASS
+		Block(1, 2, 0, 1) //STONE
 	};
 }
 

@@ -141,13 +141,13 @@
     <ClCompile Include="src\block.cpp" />
     <ClCompile Include="src\camera.cpp" />
     <ClCompile Include="src\chunk.cpp" />
-    <ClCompile Include="src\chunkGenerator.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\perlinNoise.cpp" />
     <ClCompile Include="src\shader.cpp" />
     <ClCompile Include="src\stb.cpp" />
     <ClCompile Include="src\texture.cpp" />
+    <ClCompile Include="src\world.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imconfig.h" />
@@ -162,10 +162,11 @@
     <ClInclude Include="include\block.h" />
     <ClInclude Include="include\camera.h" />
     <ClInclude Include="include\chunk.h" />
-    <ClInclude Include="include\chunkGenerator.h" />
+    <ClInclude Include="include\face.h" />
     <ClInclude Include="include\perlinNoise.h" />
     <ClInclude Include="include\shader.h" />
     <ClInclude Include="include\texture.h" />
+    <ClInclude Include="include\world.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

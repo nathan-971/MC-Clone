@@ -1,14 +1,13 @@
 #include "chunk.h"
 #include <iostream>
 
-Chunk::Chunk(unsigned int size, glm::vec3 pos)
+Chunk::Chunk(unsigned int size, unsigned int height, glm::vec3 pos)
 {
 	this->generated = false;
 	this->ready = false;
 	this->size = size;
-    this->height = 1;
+    this->height = height;
 	this->chunkPos = pos;
-	genChunk();
 }
 
 Chunk::~Chunk()
@@ -18,12 +17,12 @@ Chunk::~Chunk()
 	glDeleteBuffers(1, &VBO);
 }
 
-void Chunk::genChunk()
+void Chunk::generateChunk()
 {
-	int currentVertex = 0;
 	worldPos = glm::vec3(chunkPos.x * size, chunkPos.y * size, chunkPos.z * size);
-    chunkData = ChunkGenerator::generateChunkData(size, height);
+    chunkData = generateChunkData(size, height);
 
+    int currentVertex = 0;
     for (int y = 0; y < height; y++)
     {
         for (int z = 0; z < size; z++)
@@ -31,115 +30,33 @@ void Chunk::genChunk()
             for (int x = 0; x < size; x++)
             {
                 int index = y * size * size + z * size + x;
-                if (chunkData[index] == BlockUtils::BlockType::AIR) // Skip if block is air
+                if (chunkData[index] == BlockUtils::BlockType::AIR)
                 {
                     continue;
                 }
 
                 const BlockUtils::Block* currentBlock = &BlockUtils::blockRegistry[chunkData[index]];
-
-                // North Face
-                if (z + 1 >= size || chunkData[y * (size * size) + (z + 1) * size + x] == BlockUtils::BlockType::AIR)
+                for (int i = 0; i < static_cast<int>(FaceUtils::Direction::DIRECTION_COUNT); ++i) 
                 {
-                    vertices.push_back(Vertex(x + 0.0f, y + 0.0f, z + 1.0f, currentBlock->sideMinX, currentBlock->sideMinY));
-                    vertices.push_back(Vertex(x + 0.0f, y + 1.0f, z + 1.0f, currentBlock->sideMinX, currentBlock->sideMaxY));
-                    vertices.push_back(Vertex(x + 1.0f, y + 1.0f, z + 1.0f, currentBlock->sideMaxX, currentBlock->sideMaxY));
-                    vertices.push_back(Vertex(x + 1.0f, y + 0.0f, z + 1.0f, currentBlock->sideMaxX, currentBlock->sideMinY));
-                    indices.push_back(currentVertex + 0);
-                    indices.push_back(currentVertex + 1);
-                    indices.push_back(currentVertex + 2);
-                    indices.push_back(currentVertex + 0);
-                    indices.push_back(currentVertex + 2);
-                    indices.push_back(currentVertex + 3);
-                    currentVertex += 4;
-                }
+                    FaceUtils::Direction direction = static_cast<FaceUtils::Direction>(i);
 
-                // South Face
-                if (z - 1 < 0 || chunkData[y * (size * size) + (z - 1) * size + x] == BlockUtils::BlockType::AIR)
-                {
-                    vertices.push_back(Vertex(x + 0.0f, y + 0.0f, z + 0.0f, currentBlock->sideMinX, currentBlock->sideMinY));
-                    vertices.push_back(Vertex(x + 1.0f, y + 0.0f, z + 0.0f, currentBlock->sideMaxX, currentBlock->sideMinY));
-                    vertices.push_back(Vertex(x + 1.0f, y + 1.0f, z + 0.0f, currentBlock->sideMaxX, currentBlock->sideMaxY));
-                    vertices.push_back(Vertex(x + 0.0f, y + 1.0f, z + 0.0f, currentBlock->sideMinX, currentBlock->sideMaxY));
-                    indices.push_back(currentVertex + 0);
-                    indices.push_back(currentVertex + 1);
-                    indices.push_back(currentVertex + 2);
-                    indices.push_back(currentVertex + 0);
-                    indices.push_back(currentVertex + 2);
-                    indices.push_back(currentVertex + 3);
-                    currentVertex += 4;
-                }
-
-                // West Face
-                if (x - 1 < 0 || chunkData[y * (size * size) + z * size + (x - 1)] == BlockUtils::BlockType::AIR)
-                {
-                    vertices.push_back(Vertex(x + 0.0f, y + 0.0f, z + 0.0f, currentBlock->sideMinX, currentBlock->sideMinY));
-                    vertices.push_back(Vertex(x + 0.0f, y + 1.0f, z + 0.0f, currentBlock->sideMinX, currentBlock->sideMaxY));
-                    vertices.push_back(Vertex(x + 0.0f, y + 1.0f, z + 1.0f, currentBlock->sideMaxX, currentBlock->sideMaxY));
-                    vertices.push_back(Vertex(x + 0.0f, y + 0.0f, z + 1.0f, currentBlock->sideMaxX, currentBlock->sideMinY));
-                    indices.push_back(currentVertex + 0);
-                    indices.push_back(currentVertex + 1);
-                    indices.push_back(currentVertex + 2);
-                    indices.push_back(currentVertex + 0);
-                    indices.push_back(currentVertex + 2);
-                    indices.push_back(currentVertex + 3);
-                    currentVertex += 4;
-                }
-
-                // East Face
-                if (x + 1 >= size || chunkData[y * (size * size) + z * size + (x + 1)] == BlockUtils::BlockType::AIR)
-                {
-                    vertices.push_back(Vertex(x + 1.0f, y + 0.0f, z + 0.0f, currentBlock->sideMinX, currentBlock->sideMinY));
-                    vertices.push_back(Vertex(x + 1.0f, y + 0.0f, z + 1.0f, currentBlock->sideMaxX, currentBlock->sideMinY));
-                    vertices.push_back(Vertex(x + 1.0f, y + 1.0f, z + 1.0f, currentBlock->sideMaxX, currentBlock->sideMaxY));
-                    vertices.push_back(Vertex(x + 1.0f, y + 1.0f, z + 0.0f, currentBlock->sideMinX, currentBlock->sideMaxY));
-                    indices.push_back(currentVertex + 0);
-                    indices.push_back(currentVertex + 1);
-                    indices.push_back(currentVertex + 2);
-                    indices.push_back(currentVertex + 0);
-                    indices.push_back(currentVertex + 2);
-                    indices.push_back(currentVertex + 3);
-                    currentVertex += 4;
-                }
-
-                // Bottom Face
-                if (y - 1 < 0 || chunkData[(y - 1) * size * size + z * size + x] == BlockUtils::BlockType::AIR)
-                {
-                    vertices.push_back(Vertex(x + 0.0f, y + 0.0f, z + 0.0f, currentBlock->bottomMinX, currentBlock->bottomMinY));
-                    vertices.push_back(Vertex(x + 1.0f, y + 0.0f, z + 0.0f, currentBlock->bottomMaxX, currentBlock->bottomMinY));
-                    vertices.push_back(Vertex(x + 1.0f, y + 0.0f, z + 1.0f, currentBlock->bottomMaxX, currentBlock->bottomMaxY));
-                    vertices.push_back(Vertex(x + 0.0f, y + 0.0f, z + 1.0f, currentBlock->bottomMinX, currentBlock->bottomMaxY));
-                    indices.push_back(currentVertex + 0);
-                    indices.push_back(currentVertex + 2);
-                    indices.push_back(currentVertex + 1);
-                    indices.push_back(currentVertex + 0);
-                    indices.push_back(currentVertex + 3);
-                    indices.push_back(currentVertex + 2);
-                    currentVertex += 4;
-                }
-
-                // Top Face
-                if (y + 1 >= height || chunkData[(y + 1) * size * size + z * size + x] == BlockUtils::BlockType::AIR)
-                {
-                    vertices.push_back(Vertex(x + 0.0f, y + 1.0f, z + 0.0f, currentBlock->topMinX, currentBlock->topMinY));
-                    vertices.push_back(Vertex(x + 0.0f, y + 1.0f, z + 1.0f, currentBlock->topMinX, currentBlock->topMaxY));
-                    vertices.push_back(Vertex(x + 1.0f, y + 1.0f, z + 1.0f, currentBlock->topMaxX, currentBlock->topMaxY));
-                    vertices.push_back(Vertex(x + 1.0f, y + 1.0f, z + 0.0f, currentBlock->topMaxX, currentBlock->topMinY));
-                    indices.push_back(currentVertex + 0);
-                    indices.push_back(currentVertex + 2);
-                    indices.push_back(currentVertex + 1);
-                    indices.push_back(currentVertex + 0);
-                    indices.push_back(currentVertex + 3);
-                    indices.push_back(currentVertex + 2);
-                    currentVertex += 4;
+                    if (faceShouldRender(direction, chunkData, height, size, x, y, z))
+                    {
+                        addFace(
+                            vertices,
+                            indices,
+                            FaceUtils::getFacePostion(direction),
+                            FaceUtils::getFaceUV(direction, *currentBlock),
+                            glm::vec3(x, y, z),
+                            direction,
+                            currentVertex
+                        );
+                    }
                 }
             }
         }
     }
-
 	this->generated = true;
-	//std::cout << "Vertices Size: " << vertices.size() << "\nIndices Size: " << indices.size();
-	//std::cout << "\nWorld Position: (" << chunkPos.x << ", " << chunkPos.y << ", " << chunkPos.z << ")\n";
 }
 
 void Chunk::renderChunk(unsigned int& shaderID)
@@ -173,4 +90,93 @@ void Chunk::renderChunk(unsigned int& shaderID)
 	model = glm::translate(model, worldPos);
 	glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(model));
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
+}
+
+void Chunk::addFace(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices, FaceUtils::FacePositionData& pos, FaceUtils::FaceUVData uv, glm::vec3 currentCoordinates, FaceUtils::Direction dir, int& currentVertex)
+{
+    glm::vec3 base = pos.basePosition + currentCoordinates;
+    if (dir == FaceUtils::Direction::EAST) //Temporary Fix For Incorrect UV
+    {
+        vertices.push_back(Vertex(base, uv.maxX, uv.minY));
+        vertices.push_back(Vertex(base + pos.leftOffset, uv.minX, uv.minY));
+        vertices.push_back(Vertex(base + pos.leftOffset + pos.rightOffset, uv.minX, uv.maxY));
+        vertices.push_back(Vertex(base + pos.rightOffset, uv.maxX, uv.maxY));
+    }
+    else
+    {
+        vertices.push_back(Vertex(base, uv.minX, uv.minY));
+        vertices.push_back(Vertex(base + pos.leftOffset, uv.minX, uv.maxY));
+        vertices.push_back(Vertex(base + pos.leftOffset + pos.rightOffset, uv.maxX, uv.maxY));
+        vertices.push_back(Vertex(base + pos.rightOffset, uv.maxX, uv.minY));
+    }
+
+    indices.push_back(currentVertex + 0);
+    indices.push_back(currentVertex + 1);
+    indices.push_back(currentVertex + 2);
+    indices.push_back(currentVertex + 0);
+    indices.push_back(currentVertex + 2);
+    indices.push_back(currentVertex + 3);
+    currentVertex += 4;
+}
+
+bool Chunk::faceShouldRender(FaceUtils::Direction dir, std::vector<unsigned int>& chunkData, unsigned int& height, unsigned int& size, int curX, int curY, int curZ)
+{
+    switch (dir)
+    {
+        case FaceUtils::Direction::NORTH:
+            return curZ + 1 >= size || chunkData[curY * (size * size) + (curZ + 1) * size + curX] == BlockUtils::BlockType::AIR;
+        case FaceUtils::Direction::SOUTH:
+            return curZ - 1 < 0 || chunkData[curY * (size * size) + (curZ - 1) * size + curX] == BlockUtils::BlockType::AIR;
+        case FaceUtils::Direction::WEST:
+            return curX - 1 < 0 || chunkData[curY * (size * size) + curZ * size + (curX - 1)] == BlockUtils::BlockType::AIR;
+        case FaceUtils::Direction::EAST:
+            return curX + 1 >= size || chunkData[curY * (size * size) + curZ * size + (curX + 1)] == BlockUtils::BlockType::AIR;
+        case FaceUtils::Direction::TOP:
+            return curY + 1 >= height || chunkData[(curY + 1) * size * size + curZ * size + curX] == BlockUtils::BlockType::AIR;
+        case FaceUtils::Direction::BOTTOM:
+            return curY - 1 < 0 || chunkData[(curY - 1) * size * size + curZ * size + curX] == BlockUtils::BlockType::AIR;
+        default:
+            return false;
+    }
+}
+
+bool Chunk::chunkHasNeighbour(Chunk* neighbouringChunk)
+{
+    if (neighbouringChunk == nullptr)
+    {
+        return false;
+    }
+    return true;
+}
+
+std::vector<unsigned int> Chunk::generateChunkData(int chunkWidth, int chunkHeight)
+{
+    std::vector<unsigned int> newData;
+    newData.reserve(chunkWidth * chunkWidth * chunkHeight);
+    for (int y = 0; y < chunkHeight; y++)
+    {
+        for (int z = 0; z < chunkWidth; z++)
+        {
+            for (int x = 0; x < chunkWidth; x++)
+            {
+                if (y <= 16)
+                {
+                    newData.push_back(BlockUtils::BlockType::STONE);
+                }
+                else if (y >= 17 && y <= 30)
+                {
+                    newData.push_back(BlockUtils::BlockType::DIRT);
+                }
+                else if (y == 31)
+                {
+                    newData.push_back(BlockUtils::BlockType::GRASS);
+                }
+                else
+                {
+                    newData.push_back(BlockUtils::BlockType::AIR);
+                }
+            }
+        }
+    }
+    return newData;
 }

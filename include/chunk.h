@@ -8,9 +8,10 @@
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtx/vector_angle.hpp>
 #include <vector>
+#include <unordered_map>
 
+#include "face.h"
 #include "block.h"
-#include "chunkGenerator.h"
 
 struct Vertex
 {
@@ -27,24 +28,50 @@ struct Vertex
 		this->u = u;
 		this->v = v;
 	}
+
+	Vertex(glm::vec3 vertexCoords, float u, float v)
+	{
+		//Vertex Position Data
+		this->x = vertexCoords.x;
+		this->y = vertexCoords.y;
+		this->z = vertexCoords.z;
+
+		//Texcoord Data
+		this->u = u;
+		this->v = v;
+	}
+};
+
+enum ChunkNeighbours
+{
+	NORTH = 0,
+	EAST = 1,
+	SOUTH = 2,
+	WEST = 3
 };
 
 class Chunk
 {
 public:
-	Chunk(unsigned int size, glm::vec3 pos);
+	Chunk(unsigned int size, unsigned int height, glm::vec3 pos);
 	~Chunk();
-	void genChunk();
+	void generateChunk();
 	void renderChunk(unsigned int& shaderID);
+	Chunk* neighbours[4] = { nullptr };
 	glm::vec3 chunkPos;
-	std::vector<unsigned int> chunkData; //Holds enum vals for block types
 private:
+	std::vector<unsigned int> generateChunkData(int chunkWidth, int chunkHeight);
+	void addFace(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices, FaceUtils::FacePositionData& pos, FaceUtils::FaceUVData uv,glm::vec3 currentCoordinates, FaceUtils::Direction dir, int& currentVertex);
+	bool faceShouldRender(FaceUtils::Direction dir, std::vector<unsigned int>& chunkData, unsigned int& height, unsigned int& size, int curX, int curY, int curZ);
+	bool chunkHasNeighbour(Chunk* neighbouringChunk);
+
 	bool ready;
 	bool generated;
 	unsigned int VAO, VBO, EBO;
 	unsigned int size;
 	unsigned int height;
 
+	std::vector<unsigned int> chunkData; //Holds enum vals for block types
 	glm::vec3 worldPos;
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
