@@ -1,5 +1,0 @@
-﻿  main.cpp
-C:\Users\Nathan\Desktop\MC-Clone\include\world.h(41,49): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
-  (compiling source file 'src/main.cpp')
-  
-  GLCraft.vcxproj -> C:\Users\Nathan\Desktop\MC-Clone\x64\Debug\GLCraft.exe

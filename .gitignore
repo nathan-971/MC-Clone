@@ -1,2 +1,94 @@
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# User-specific settings
+.vscode/
 .vs/
-/x64/Debug/*.pdb
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+
+# Visual Studio cache files
+*.pdb
+*.idb
+*.ipdb
+*.iobj
+*.ilk
+*.sbr
+*.opendb
+*.tlog
+*.lastbuildstate
+*.db
+*.cachefile
+*.VC.db
+*.VC.VC.opendb
+
+# Compiled dynamic libraries
+*.dll
+*.exe
+*.app
+*.out
+*.so
+
+# Generated files
+*.pch
+*.obj
+*.o
+*.lo
+*.slo
+*.tlb
+*.tlh
+*.tmp
+*.tmp_proj
+*.log
+*.vspscc
+*_i.c
+*_p.c
+*_h.h
+*.meta
+*.obj.enc
+
+# Test results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# NuGet packages
+*.nupkg
+*.snupkg
+*.nuspec
+*.psmdcp
+packages/
+
+# Others
+*.bak
+*.orig
+*.tmp
+*.scc
+*.swp
+*.aps
+*.ncb
+*.opendb
+*.unsuccessfulbuild
+*.Build.CppClean.log
+
+# CMake build folders
+[Cc]MakeFiles/
+[Cc]MakeCache.txt
+cmake_install.cmake
+CMakeSettings.json
