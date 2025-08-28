@@ -10,10 +10,9 @@ World::World(glm::vec3 camPos, unsigned int size, unsigned int program)
 
 World::~World()
 {
-	for (const auto& pair : this->chunks)
+	for (auto& pair : this->chunks)
 	{
-		Chunk* c = pair.second;
-		delete c;
+		delete pair.second;
 	}
 	chunks.clear();
 }
@@ -40,9 +39,9 @@ void World::generateWorld()
 		ChunkCoordinates cc = pair.first;
 		Chunk* c = pair.second;
 		c->neighbours[ChunkNeighbours::NORTH] = getChunkAt(cc.x, cc.z + 1);
-		c->neighbours[ChunkNeighbours::EAST] = getChunkAt(cc.x - 1, cc.z);
 		c->neighbours[ChunkNeighbours::SOUTH] = getChunkAt(cc.x, cc.z - 1);
-		c->neighbours[ChunkNeighbours::WEST] = getChunkAt(cc.x + 1, cc.z);
+		c->neighbours[ChunkNeighbours::EAST] = getChunkAt(cc.x + 1, cc.z);
+		c->neighbours[ChunkNeighbours::WEST] = getChunkAt(cc.x - 1, cc.z);
 		c->generateChunk();
 	}
 }

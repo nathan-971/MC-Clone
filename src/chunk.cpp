@@ -8,6 +8,7 @@ Chunk::Chunk(unsigned int size, unsigned int height, glm::vec3 pos)
 	this->size = size;
     this->height = height;
 	this->chunkPos = pos;
+    chunkData = generateChunkData(size, height);
 }
 
 Chunk::~Chunk()
@@ -20,7 +21,6 @@ Chunk::~Chunk()
 void Chunk::generateChunk()
 {
 	worldPos = glm::vec3(chunkPos.x * size, chunkPos.y * size, chunkPos.z * size);
-    chunkData = generateChunkData(size, height);
 
     int currentVertex = 0;
     for (int y = 0; y < height; y++)
@@ -29,13 +29,13 @@ void Chunk::generateChunk()
         {
             for (int x = 0; x < size; x++)
             {
-                int index = y * size * size + z * size + x;
-                if (chunkData[index] == BlockUtils::BlockType::AIR)
+                unsigned int curBlockIndex = getBlock(x, y, z);
+                if (curBlockIndex == BlockUtils::BlockType::AIR)
                 {
                     continue;
                 }
 
-                const BlockUtils::Block* currentBlock = &BlockUtils::blockRegistry[chunkData[index]];
+                const BlockUtils::Block* currentBlock = &BlockUtils::blockRegistry[curBlockIndex];
                 for (int i = 0; i < static_cast<int>(FaceUtils::Direction::DIRECTION_COUNT); ++i) 
                 {
                     FaceUtils::Direction direction = static_cast<FaceUtils::Direction>(i);
@@ -56,6 +56,7 @@ void Chunk::generateChunk()
             }
         }
     }
+    printChunk();
 	this->generated = true;
 }
 
@@ -124,29 +125,73 @@ bool Chunk::faceShouldRender(FaceUtils::Direction dir, std::vector<unsigned int>
     switch (dir)
     {
         case FaceUtils::Direction::NORTH:
-            return curZ + 1 >= size || chunkData[curY * (size * size) + (curZ + 1) * size + curX] == BlockUtils::BlockType::AIR;
+            if (curZ + 1 >= size)
+            {
+                return faceIsOccludedByNeighbour(neighbours[ChunkNeighbours::NORTH], curX, curY, curZ + 1);
+            }
+            return getBlock(curX, curY, curZ + 1) == BlockUtils::BlockType::AIR;
+
         case FaceUtils::Direction::SOUTH:
-            return curZ - 1 < 0 || chunkData[curY * (size * size) + (curZ - 1) * size + curX] == BlockUtils::BlockType::AIR;
+            if (curZ - 1 < 0)
+            {
+                return faceIsOccludedByNeighbour(neighbours[ChunkNeighbours::SOUTH], curX, curY, curZ);
+            }
+            return getBlock(curX, curY, curZ - 1) == BlockUtils::BlockType::AIR;
+
         case FaceUtils::Direction::WEST:
-            return curX - 1 < 0 || chunkData[curY * (size * size) + curZ * size + (curX - 1)] == BlockUtils::BlockType::AIR;
+            if (curX - 1 < 0)
+            {
+                return faceIsOccludedByNeighbour(neighbours[ChunkNeighbours::WEST], curX, curY, curZ);
+            }
+            return getBlock(curX - 1, curY, curZ) == BlockUtils::BlockType::AIR;
+
         case FaceUtils::Direction::EAST:
-            return curX + 1 >= size || chunkData[curY * (size * size) + curZ * size + (curX + 1)] == BlockUtils::BlockType::AIR;
+            if (curX + 1 >= size)
+            {
+                return faceIsOccludedByNeighbour(neighbours[ChunkNeighbours::EAST], curX + 1, curY, curZ);
+            }
+            return getBlock(curX + 1, curY, curZ) == BlockUtils::BlockType::AIR;
+
         case FaceUtils::Direction::TOP:
-            return curY + 1 >= height || chunkData[(curY + 1) * size * size + curZ * size + curX] == BlockUtils::BlockType::AIR;
+            return curY + 1 >= height || getBlock(curX, curY + 1, curZ) == BlockUtils::BlockType::AIR;
         case FaceUtils::Direction::BOTTOM:
-            return curY - 1 < 0 || chunkData[(curY - 1) * size * size + curZ * size + curX] == BlockUtils::BlockType::AIR;
+            return curY - 1 < 0 || getBlock(curX, curY - 1, curZ) == BlockUtils::BlockType::AIR;
         default:
             return false;
     }
 }
 
-bool Chunk::chunkHasNeighbour(Chunk* neighbouringChunk)
+bool Chunk::faceIsOccludedByNeighbour(Chunk* neighbour, unsigned int x, unsigned int y, unsigned int z)
 {
-    if (neighbouringChunk == nullptr)
+    if (x >= size)
     {
-        return false;
+        x = 0;
+    }
+    else if (x < 0)
+    {
+        x = size - 1;
+    }
+
+    if (z >= size)
+    {
+        z = 0;
+    }
+    else if (z < 0)
+    {
+        z = size - 1;
+    }
+
+    if (neighbour != nullptr)
+    {
+        unsigned int neighbourBlock = neighbour->getBlock(x, y, z);
+        return (neighbourBlock == BlockUtils::BlockType::AIR);
     }
     return true;
+}
+
+unsigned int Chunk::getBlock(int x, int y, int z)
+{
+    return chunkData[y * (size * size) + z * size + x];
 }
 
 std::vector<unsigned int> Chunk::generateChunkData(int chunkWidth, int chunkHeight)
@@ -179,4 +224,36 @@ std::vector<unsigned int> Chunk::generateChunkData(int chunkWidth, int chunkHeig
         }
     }
     return newData;
+}
+
+void Chunk::printChunk()
+{
+    int neighbourCount = 0;
+    std::cout << "\n============================\n      Chunk Information      \n============================\n"
+    << "[Vertices Count]: " << this->vertices.size() << "\n"
+    << "[Indices Count]: " << this->indices.size() << "\n"
+    << "[Height]: " << this->height << "\n"
+    << "[Width / Depth]: " << this->size << "\n"
+    << "[Position (X,Y,Z)]: (" << this->chunkPos.x << ", " << this->chunkPos.y << ", " << this->chunkPos.z << ")\n"
+    << "-----------------------------\nNeighbours:" << std::endl;
+    for (Chunk* c : this->neighbours)
+    {
+        if (c == nullptr)
+        {
+            continue;
+        }
+        neighbourCount++;
+        std::cout << "   " << neighbourCount << "): ("
+            << c->chunkPos.x << ", " 
+            << c->chunkPos.y << ", " 
+            << c->chunkPos.z << ")\n";
+    }
+    if (neighbourCount == 0)
+    {
+        std::cout << "   None\n";
+    }
+
+    std::cout << "\nTotal Neighbours: " << neighbourCount 
+    << "\n============================\n" 
+    << std::endl;
 }

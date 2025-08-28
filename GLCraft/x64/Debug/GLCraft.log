@@ -1,9 +1,5 @@
-﻿  chunk.cpp
-C:\Users\Nathan\Desktop\MC-Clone\src\chunk.cpp(26,23): warning C4018: '<': signed/unsigned mismatch
-C:\Users\Nathan\Desktop\MC-Clone\src\chunk.cpp(28,27): warning C4018: '<': signed/unsigned mismatch
-C:\Users\Nathan\Desktop\MC-Clone\src\chunk.cpp(30,31): warning C4018: '<': signed/unsigned mismatch
-C:\Users\Nathan\Desktop\MC-Clone\src\chunk.cpp(92,43): warning C4267: 'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
-C:\Users\Nathan\Desktop\MC-Clone\src\chunk.cpp(127,29): warning C4018: '>=': signed/unsigned mismatch
-C:\Users\Nathan\Desktop\MC-Clone\src\chunk.cpp(133,29): warning C4018: '>=': signed/unsigned mismatch
-C:\Users\Nathan\Desktop\MC-Clone\src\chunk.cpp(135,29): warning C4018: '>=': signed/unsigned mismatch
+﻿  main.cpp
+C:\Users\Nathan\Desktop\MC-Clone\include\world.h(41,49): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+  (compiling source file 'src/main.cpp')
+  
   GLCraft.vcxproj -> C:\Users\Nathan\Desktop\MC-Clone\x64\Debug\GLCraft.exe

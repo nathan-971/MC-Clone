@@ -45,9 +45,9 @@ struct Vertex
 enum ChunkNeighbours
 {
 	NORTH = 0,
-	EAST = 1,
-	SOUTH = 2,
-	WEST = 3
+	SOUTH = 1,
+	WEST = 2,
+	EAST = 3
 };
 
 class Chunk
@@ -57,13 +57,15 @@ public:
 	~Chunk();
 	void generateChunk();
 	void renderChunk(unsigned int& shaderID);
+	unsigned int getBlock(int x, int y, int z);
 	Chunk* neighbours[4] = { nullptr };
 	glm::vec3 chunkPos;
 private:
 	std::vector<unsigned int> generateChunkData(int chunkWidth, int chunkHeight);
 	void addFace(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices, FaceUtils::FacePositionData& pos, FaceUtils::FaceUVData uv,glm::vec3 currentCoordinates, FaceUtils::Direction dir, int& currentVertex);
 	bool faceShouldRender(FaceUtils::Direction dir, std::vector<unsigned int>& chunkData, unsigned int& height, unsigned int& size, int curX, int curY, int curZ);
-	bool chunkHasNeighbour(Chunk* neighbouringChunk);
+	bool faceIsOccludedByNeighbour(Chunk* neighbouringChunk, unsigned int curX, unsigned int curY, unsigned int curZ);
+	void printChunk();
 
 	bool ready;
 	bool generated;
@@ -71,10 +73,10 @@ private:
 	unsigned int size;
 	unsigned int height;
 
-	std::vector<unsigned int> chunkData; //Holds enum vals for block types
 	glm::vec3 worldPos;
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
+	std::vector<unsigned int> chunkData; //Holds enum vals for block types
 };
 
 #endif

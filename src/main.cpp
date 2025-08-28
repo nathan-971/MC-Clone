@@ -12,20 +12,24 @@
 #include "camera.h"
 #include "world.h"
 
+#define GL_VERSION_NUM 3
+
 #define VSYNC 1
 #define NOVSYNC 0
+
+#define SCR_WIDTH 800
+#define SCR_HEIGHT 800
+
+#define WORLD_CHUNK_COUNT 2
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void enableWireFrame(GLFWwindow* window);
 
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 800;
-
 int main()
 {
     glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, GL_VERSION_NUM);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, GL_VERSION_NUM);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "GLCraft", NULL, NULL);
@@ -68,7 +72,7 @@ int main()
     Shader shader("assets/shaders/vertex.glsl", "assets/shaders/fragment.glsl");
     Camera camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 35.0f, 0.0f));
     Texture textureMap("assets/textures/blockMap.png");
-    World world(camera.Position , 4, shader.progID);
+    World world(camera.Position , WORLD_CHUNK_COUNT, shader.progID);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -121,8 +125,6 @@ int main()
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
-    world.~World();
-    shader.~Shader();
     glfwTerminate();
     return 0;
 }
